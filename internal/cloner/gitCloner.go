@@ -6,10 +6,11 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/denizgursoy/gotouch/internal/logger"
-	"github.com/denizgursoy/gotouch/internal/store"
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
+
+	"github.com/denizgursoy/gotouch/internal/logger"
+	"github.com/denizgursoy/gotouch/internal/store"
 )
 
 const (
@@ -31,7 +32,7 @@ func newCloner() Cloner {
 }
 
 func (g *gitCloner) CloneFromUrl(url, branchName string) error {
-	projectName := g.Store.GetValue(store.ProjectName)
+	projectFullPath := g.Store.GetValue(store.ProjectFullPath)
 
 	var name plumbing.ReferenceName
 	if len(strings.TrimSpace(branchName)) != 0 {
@@ -42,17 +43,19 @@ func (g *gitCloner) CloneFromUrl(url, branchName string) error {
 	}
 
 	cloneOptions := &git.CloneOptions{
+		Depth:         1,
+		SingleBranch:  true,
 		URL:           url,
 		Progress:      os.Stdout,
 		ReferenceName: name,
 	}
 
-	_, err := git.PlainClone(projectName, false, cloneOptions)
+	_, err := git.PlainClone(projectFullPath, false, cloneOptions)
 	if err != nil {
 		return err
 	}
 
-	gitDirectory := projectName + string(filepath.Separator) + GitDirectory
+	gitDirectory := filepath.Join(projectFullPath, GitDirectory)
 	if err = os.RemoveAll(gitDirectory); err != nil {
 		return err
 	}
