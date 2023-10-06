@@ -1,7 +1,9 @@
 package cloner
 
 import (
+	"errors"
 	"fmt"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
@@ -65,9 +67,11 @@ func (g *gitCloner) CloneFromUrl(rawUrl, branchName string) error {
 		ReferenceName: name,
 	}
 
-	_, err := git.PlainClone(projectName, false, cloneOptions)
+	_, err := git.PlainClone(projectFullPath, false, cloneOptions)
 	if err != nil {
-		return err
+		if !errors.Is(err, transport.ErrEmptyRemoteRepository) {
+			return err
+		}
 	}
 
 	gitDirectory := filepath.Join(projectFullPath, GitDirectory)
