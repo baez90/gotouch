@@ -1,6 +1,7 @@
 package cloner
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"net/url"
@@ -35,7 +36,7 @@ func newCloner() Cloner {
 	}
 }
 
-func (g *gitCloner) CloneFromUrl(rawUrl, branchName string) error {
+func (g *gitCloner) CloneFromUrl(ctx context.Context, rawUrl, branchName string) error {
 	projectFullPath := g.Store.GetValue(store.ProjectFullPath)
 
 	var name plumbing.ReferenceName
@@ -67,7 +68,7 @@ func (g *gitCloner) CloneFromUrl(rawUrl, branchName string) error {
 		ReferenceName: name,
 	}
 
-	_, err := git.PlainClone(projectFullPath, false, cloneOptions)
+	_, err := git.PlainCloneContext(ctx, projectFullPath, false, cloneOptions)
 	if err != nil {
 		if !errors.Is(err, transport.ErrEmptyRemoteRepository) {
 			return err

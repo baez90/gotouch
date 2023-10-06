@@ -1,6 +1,7 @@
 package requirements
 
 import (
+	"context"
 	"errors"
 	"testing"
 
@@ -236,6 +237,7 @@ func Test_projectNameTask_Complete(t *testing.T) {
 			mockStore := store.NewMockStore(controller)
 
 			mockStore.EXPECT().SetValue(gomock.Any(), gomock.Any()).AnyTimes()
+			mockStore.EXPECT().GetValue(store.Inline).Return("false").AnyTimes()
 
 			mockManager.
 				EXPECT().
@@ -254,7 +256,7 @@ func Test_projectNameTask_Complete(t *testing.T) {
 				Store:      mockStore,
 			}
 
-			err := task.Complete()
+			err := task.Complete(context.Background())
 			require.NoError(t, err)
 		}
 	})
@@ -267,6 +269,7 @@ func Test_projectNameTask_Complete(t *testing.T) {
 		mockStore := store.NewMockStore(controller)
 
 		mockStore.EXPECT().SetValue(gomock.Any(), gomock.Any()).AnyTimes()
+		mockStore.EXPECT().GetValue(store.Inline).Return("false").AnyTimes()
 
 		mockManager.
 			EXPECT().
@@ -287,7 +290,7 @@ func Test_projectNameTask_Complete(t *testing.T) {
 			Store:      mockStore,
 		}
 
-		err := task.Complete()
+		err := task.Complete(context.Background())
 
 		require.NotNil(t, err)
 	})

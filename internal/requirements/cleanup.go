@@ -1,6 +1,7 @@
 package requirements
 
 import (
+	"context"
 	"github.com/denizgursoy/gotouch/internal/langs"
 	"github.com/denizgursoy/gotouch/internal/model"
 	"github.com/go-playground/validator/v10"
@@ -24,7 +25,7 @@ func (c *cleanupRequirement) AskForInput() ([]model.Task, []model.Requirement, e
 	return tasks, nil, nil
 }
 
-func (c *cleanupTask) Complete() error {
+func (c *cleanupTask) Complete(context.Context) error {
 	if err := validator.New().Struct(c); err != nil {
 		return err
 	}

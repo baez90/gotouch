@@ -2,6 +2,7 @@ package requirements
 
 import (
 	"bytes"
+	"context"
 	"io"
 	"net/http"
 	"path/filepath"
@@ -22,7 +23,7 @@ type (
 	}
 )
 
-func (f *fileTask) Complete() error {
+func (f *fileTask) Complete(context.Context) error {
 	if err := validator.New().Struct(f); err != nil {
 		return err
 	}

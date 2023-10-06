@@ -1,6 +1,7 @@
 package executor
 
 import (
+	"context"
 	"errors"
 	"testing"
 
@@ -23,7 +24,7 @@ type (
 	}
 )
 
-func (t *testTask) Complete() error {
+func (t *testTask) Complete(context.Context) error {
 	t.isAskCalled = true
 	if t.err != nil {
 		return t.err
@@ -42,7 +43,7 @@ func (t *testRequirement) AskForInput() ([]model.Task, []model.Requirement, erro
 func Test_executor_Execute(t *testing.T) {
 	t.Run("should return error if the requirement is nil", func(t *testing.T) {
 		executor := newExecutor()
-		err := executor.Execute(nil)
+		err := executor.Execute(context.Background(), nil)
 		require.ErrorIs(t, err, EmptyRequirementError)
 	})
 
@@ -50,7 +51,7 @@ func Test_executor_Execute(t *testing.T) {
 		executor := newExecutor()
 		requirements, firstRequirement, secondRequirement := getRequirements()
 
-		err := executor.Execute(requirements)
+		err := executor.Execute(context.Background(), requirements)
 
 		require.NoError(t, err)
 
@@ -64,7 +65,7 @@ func Test_executor_Execute(t *testing.T) {
 	t.Run("should return error if complete function of task returns error", func(t *testing.T) {
 		executor := newExecutor()
 		errorRequirement, taskError := getCompleteErrorRequirement()
-		err := executor.Execute(Requirements{errorRequirement})
+		err := executor.Execute(context.Background(), Requirements{errorRequirement})
 
 		require.True(t, errorRequirement.isAskCalled)
 		require.True(t, errorRequirement.Tasks[0].(*testTask).isAskCalled)
@@ -76,7 +77,7 @@ func Test_executor_Execute(t *testing.T) {
 	t.Run("should return error if complete function of task returns error", func(t *testing.T) {
 		executor := newExecutor()
 		req := getRequirementReturningTwoRequirements()
-		err := executor.Execute(Requirements{req})
+		err := executor.Execute(context.Background(), Requirements{req})
 
 		require.True(t, req.Requirements[0].(*testRequirement).isAskCalled)
 		require.True(t, req.Requirements[1].(*testRequirement).isAskCalled)

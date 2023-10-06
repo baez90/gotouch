@@ -1,6 +1,7 @@
 package requirements
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -44,7 +45,7 @@ func (i *initRequirement) AskForInput() ([]model.Task, []model.Requirement, erro
 	return tasks, nil, nil
 }
 
-func (i *initTask) Complete() error {
+func (i *initTask) Complete(context.Context) error {
 	if err := validator.New().Struct(i); err != nil {
 		return err
 	}

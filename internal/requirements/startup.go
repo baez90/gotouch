@@ -1,6 +1,7 @@
 package requirements
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -19,7 +20,7 @@ type (
 
 const PropertiesYamlName = "properties.yaml"
 
-func (s *startupTask) Complete() error {
+func (s *startupTask) Complete(context.Context) error {
 	if err := validator.New().Struct(s); err != nil {
 		return err
 	}

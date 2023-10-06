@@ -1,6 +1,7 @@
 package requirements
 
 import (
+	"context"
 	"fmt"
 	"strings"
 
@@ -182,7 +183,7 @@ func (p *ProjectStructureRequirement) SelectProject() (*model.ProjectStructureDa
 	return projectStructureData, nil
 }
 
-func (p *projectStructureTask) Complete() error {
+func (p *projectStructureTask) Complete(ctx context.Context) error {
 	if err := validator.New().Struct(p); err != nil {
 		return err
 	}
@@ -190,14 +191,16 @@ func (p *projectStructureTask) Complete() error {
 	url := p.ProjectStructure.URL
 
 	if len(strings.TrimSpace(url)) != 0 {
-		if strings.HasSuffix(url, ".git") {
-			if err := p.Cloner.CloneFromUrl(url, p.ProjectStructure.Branch); err != nil {
+		if isGit, checkErr := p.ProjectStructure.IsGit(ctx); checkErr == nil && isGit {
+			if err := p.Cloner.CloneFromUrl(ctx, url, p.ProjectStructure.Branch); err != nil {
 				return err
 			}
-		} else {
+		} else if checkErr == nil && !isGit {
 			if err := p.Compressor.UncompressFromUrl(url); err != nil {
 				return err
 			}
+		} else if checkErr != nil {
+			return checkErr
 		}
 	}
 

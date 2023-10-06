@@ -1,6 +1,7 @@
 package operator
 
 import (
+	"context"
 	"testing"
 
 	"github.com/denizgursoy/gotouch/internal/commandrunner"
@@ -50,8 +51,8 @@ func TestCreateNewProject(t *testing.T) {
 
 		options.Executor.(*executor.MockExecutor).
 			EXPECT().
-			Execute(gomock.Any()).
-			Do(func(arg any) {
+			Execute(gomock.Any(), gomock.Any()).
+			Do(func(ctx, arg any) {
 				execRequirements := arg.(executor.Requirements)
 				require.Len(t, execRequirements, 1)
 				structure := execRequirements[0].(*requirements.ProjectStructureRequirement)
@@ -64,7 +65,7 @@ func TestCreateNewProject(t *testing.T) {
 				require.EqualValues(t, expectedProjectData, structure.ProjectsData)
 			})
 
-		err := GetInstance().CreateNewProject(&options)
+		err := GetInstance().CreateNewProject(context.Background(), &options)
 
 		require.Nil(t, err)
 	})

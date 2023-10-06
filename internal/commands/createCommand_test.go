@@ -58,7 +58,7 @@ func TestGetCreateCommandHandler(t *testing.T) {
 				ConfigManager: config.NewConfigManager(logger.NewLogger()),
 			}
 
-			mockCommander.EXPECT().CreateNewProject(gomock.Eq(expectedCall))
+			mockCommander.EXPECT().CreateNewProject(gomock.Any(), gomock.Eq(expectedCall))
 
 			command := CreateRootCommand(mockCommander, BuildInfo{})
 			command.SetArgs(getCreateTestArguments(argument.flag))

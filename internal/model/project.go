@@ -1,8 +1,11 @@
 package model
 
 import (
+	"context"
 	"errors"
 	"fmt"
+	"github.com/denizgursoy/gotouch/internal/auth"
+	"net/http"
 	"net/url"
 	"strings"
 
@@ -65,6 +68,33 @@ var (
 
 func (o *Choice) String() string {
 	return o.Choice
+}
+
+func (p *ProjectStructureData) IsGit(ctx context.Context) (bool, error) {
+	httpClient := auth.NewAuthenticatedHTTPClient()
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, fmt.Sprintf("%s/info/refs?service=git-upload-pack", p.URL), nil)
+	if err != nil {
+		return false, err
+	}
+
+	resp, err := httpClient.Do(req)
+	if err != nil {
+		return false, err
+	}
+
+	defer func() {
+		_ = resp.Body.Close()
+	}()
+
+	if resp.StatusCode < http.StatusOK || resp.StatusCode >= http.StatusMultipleChoices {
+		return false, nil
+	}
+
+	if resp.Header.Get("Content-Type") != "application/x-git-upload-pack-advertisement" {
+		return false, nil
+	}
+
+	return true, nil
 }
 
 func (p *ProjectStructureData) IsValid() error {

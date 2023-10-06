@@ -1,6 +1,7 @@
 package requirements
 
 import (
+	"context"
 	"testing"
 
 	"github.com/denizgursoy/gotouch/internal/langs"
@@ -22,7 +23,7 @@ func TestComplete(t *testing.T) {
 			Dependency:      dependency,
 			LanguageChecker: checker,
 		}
-		err := task.Complete()
+		err := task.Complete(context.Background())
 		require.Nil(t, err)
 	})
 }

@@ -2,6 +2,7 @@ package requirements
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"io"
 	"io/ioutil"
@@ -99,7 +100,7 @@ func Test_fileTask_Complete(t *testing.T) {
 				Client:  arg.client,
 			}
 
-			err := task.Complete()
+			err := task.Complete(context.Background())
 			require.NoError(t, err)
 		}
 	})
@@ -122,7 +123,7 @@ func Test_fileTask_Complete(t *testing.T) {
 			}),
 		}
 
-		err := task.Complete()
+		err := task.Complete(context.Background())
 		require.Error(t, err)
 	})
 
@@ -143,7 +144,7 @@ func Test_fileTask_Complete(t *testing.T) {
 			Client:  &http.Client{},
 		}
 
-		err := task.Complete()
+		err := task.Complete(context.Background())
 		require.Error(t, err)
 		require.ErrorIs(t, unexpectedError, err)
 	})

@@ -1,6 +1,7 @@
 package requirements
 
 import (
+	"context"
 	"fmt"
 	"testing"
 
@@ -185,7 +186,7 @@ func TestStructure_Complete(t *testing.T) {
 
 		task.LanguageChecker.(*langs.MockChecker).EXPECT().Setup().Times(1)
 
-		err := task.Complete()
+		err := task.Complete(context.Background())
 		require.Nil(t, err)
 	})
 
@@ -201,7 +202,7 @@ func TestStructure_Complete(t *testing.T) {
 
 		task.LanguageChecker.(*langs.MockChecker).EXPECT().Setup().Times(1)
 
-		err := task.Complete()
+		err := task.Complete(context.Background())
 		require.Nil(t, err)
 	})
 }
